@@ -29,7 +29,6 @@ ChangeColor=(e)=>{
 render() {
   const CartColor={
     background:this.state.color,
-    margin:'-2px',
     
    
   }
