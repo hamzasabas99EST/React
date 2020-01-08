@@ -14,8 +14,8 @@ class Article extends Component {
         relatedArticles:[]
     }
 
-    Articles(){
-        axios.get('http://localhost:8000/articles/'+this.props.match.params.id)
+    Articles(id){
+        axios.get('http://localhost:8000/articles/'+id)
         .then(rep=>{
             this.setState({
                 nom:rep.data.nom,
@@ -24,18 +24,27 @@ class Article extends Component {
                 vote:rep.data.vote,
             })
         })
+        axios.get('http://localhost:8000/articles/')
+        .then(rep=>{
+            this.setState({
+             relatedArticles:rep.data.filter(articles=>articles._id!==id),
+             })
+         })
     }
     
     componentDidMount(){
-       this.Articles(); 
-       axios.get('http://localhost:8000/articles/')
-
-       .then(rep=>{
-           this.setState({
-               relatedArticles:rep.data.filter(articles=>articles._id!==this.props.match.params.id),
-            })
-              })
+       this.Articles(this.props.match.params.id); 
+       
+      
     }
+
+    componentWillReceiveProps(nextProps) {
+        if (nextProps.match.params.id !== this.props.match.params.id) {
+          const id = nextProps.match.params.id
+          this.Articles( id );
+        }
+      }
+    
 
     
 
@@ -51,11 +60,7 @@ class Article extends Component {
         }
 
         
-    finDArticle=(id)=>{
-
-        window.location='/Article/'+id;
-    }
-
+    
     render() {
         
       
@@ -81,7 +86,7 @@ class Article extends Component {
                         <div className="card-body my-4">
                             <h4 className="card-title">{artcile.titre} </h4>
                             <p className="card-text">{artcile.sujet.substring(0,100)}</p>
-                            <Link className="btn btn-dark" to={`/Article/${artcile._id}`} >Plus Informations</Link>
+                            <Link className="btn btn-dark" key={artcile._id} to={`/Article/${artcile._id}`} >Plus Informations</Link>
                         </div>  
                     </div>
                 ))}
